@@ -1,4 +1,3 @@
-//#include <stdio.h>
 #include <iostream>
 #include <vector>
 #include <deque>
@@ -125,21 +124,21 @@ void pre_order_print(const Node* node, int depth)
 
 int main(int n_args, char** args) {
 
-    cout << "Create tree\n";
+    cout << "Create tree" << endl;
     Node* tree = create_tree();
 
-    cout << "in order\n";
+    cout << "in order" << endl;
     in_order(tree);
-    cout << "pre order\n";
+    cout << "pre order" << endl;
     pre_order(tree);
-    cout << "post order\n";
+    cout << "post order" << endl;
     post_order(tree);
-    cout << "level order\n";
+    cout << "level order" << endl;
     level_order(tree);
 
     cout << "tree height: " << tree_height(tree, 0) << endl;
     cout << "num leaves: " << num_leaves(tree, 0) << endl;
-    cout << "pre order print\n";
+    cout << "pre order print" << endl;
     pre_order_print(tree, 0);
 
     return 0;
