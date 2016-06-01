@@ -88,9 +88,22 @@ def preOrderPrint(node, depth):
         # Go right
         preOrderPrint(node.right, depth + 1)
 
-def binaryInsert(bst, value):
-    print("implement me")
-    return
+def binaryInsert(bst, newNode):
+    # Find a place
+    node = bst
+    while node:
+        if (node.data < newNode.data):
+            if not node.left:
+                node.left = newNode
+                return
+            else:
+                node = node.left
+        if (node.data >= newNode.data):
+            if not node.left:
+                node.left = newNode
+                return
+            else:
+                node = node.right
 
 def test():
     tree = createTree()
@@ -109,3 +122,10 @@ def test():
     print("num leaves", numLeaves(tree, 0), numLeaves(tree, 0) == 4)
 
     preOrderPrint(tree,0)
+
+    bst = Node(2, Node(1, None, None), Node(3, None, None))
+    preOrderPrint(bst, 0)
+
+    binaryInsert(bst, Node(4, None, None))
+
+    preorderPrint(bst, 0)
