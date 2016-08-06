@@ -35,6 +35,23 @@ def create_graph():
 
     return G
 
+def create_dag():
+    a = Node("a",[], 0)
+    b = Node("b",[], 0)
+    c = Node("c",[], 0)
+    d = Node("d",[], 0)
+    e = Node("e",[], 0)
+    f = Node("f",[], 0)
+
+    G = Graph([a,b,c,d,e,f])
+
+    a.edges = [Edge(b, 1), Edge(c, 1)]
+    b.edges = [Edge(c, 1), Edge(d, 1), Edge(f, 1)]
+    d.edges = [Edge(e, 1)]
+    e.edges = [Edge(c, 1)]
+
+    return G
+
 def dfs_path(current_node, goal_node_name):
     path = []
     result = dfs(current_node, goal_node_name, path)
@@ -88,6 +105,44 @@ def bfs_construct_path(node):
             break
     return path
 
+# Return all paths from source to target_name
+def all_paths(source, target_name):
+    all_paths = []
+    all_paths_helper(source, target_name, all_paths, [])
+    return all_paths
+
+# Input:
+# - source node target node name, a list of all paths and the
+# intermediate path
+# Output:
+# - return true if a path has successfully been added
+# - update all_paths with every successful path
+
+def all_paths_helper(current_node, target_name, all_paths, path):
+    path.append(current_node.data)
+    if current_node.data == target_name:
+        all_paths.append(path)
+        return True
+    else:
+        current_node.status = 1
+        for edge in current_node.edges:
+            neighbour = edge.to
+            if neighbour.status == 0:
+                # create a copy of the path until this point for every
+                # diverging path
+                new_path = list(path)
+                all_paths_helper(neighbour, target_name, all_paths, new_path)
+        current_node.status = 2
+    return False
+
+def dft(current_node):
+    print(current_node.data)
+    current_node.status = 1
+    for edge in current_node.edges:
+        if edge.to.status == 0:
+            dft(edge.to)
+    current_node.status = 2       
+
 def test_search(algo, G, starting_node, target_name):
     result = algo(starting_node, target_name)
     print("Path %s -> %s: %s" % (starting_node.data, target_name, result))
@@ -102,6 +157,7 @@ def test_dfs():
     test_search(dfs_path, G, G.vertices[0], "c")
     test_search(dfs_path, G, G.vertices[0], "e")
     test_search(dfs_path, G, G.vertices[1], "s")
+    test_search(bfs_path, G, G.vertices[4], "d")
 
 def test_bfs():
     print("Test BFS")
@@ -111,5 +167,29 @@ def test_bfs():
     test_search(bfs_path, G, G.vertices[1], "s")
     test_search(bfs_path, G, G.vertices[4], "d")
 
+def test_all_paths():
+    print("Test BFS")
+    def test(source, target_name):
+        paths = all_paths(source, target_name)   
+        print("All paths %s -> %s:" % (source.data, target_name))
+        for path in paths:
+            print(path)
+        for node in G.vertices:
+            node.status = 0
+    G = create_dag()
+    test(G.vertices[0], "c")
+    test(G.vertices[0], "e")
+    test(G.vertices[1], "s")
+    test(G.vertices[1], "d")
+    test(G.vertices[0], "f")
+
+def test_dft():
+    print("Test DFT")
+
+    G = create_dag()
+    dft(G.vertices[0])
+
 test_dfs()
 test_bfs()
+test_all_paths()
+test_dft()
