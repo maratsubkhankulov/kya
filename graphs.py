@@ -1,3 +1,5 @@
+# Structures
+
 # 0 - unvisited
 # 1 - in progress
 # 2 - visited
@@ -18,39 +20,79 @@ class Graph:
     def __init__(self, vertices):
         self.vertices = vertices
 
-def create_graph():
-    s = Node("s",[], 0)
-    a = Node("a",[], 0)
-    b = Node("b",[], 0)
-    c = Node("c",[], 0)
-    d = Node("d",[], 0)
+class MatrixNode:
+    def __init__(self, data, status):
+        self.data = data
+        self.status = status
 
-    G = Graph([a,b,c,d,s])
+class MatrixGraph:
+    def __init__(self, nodes):
+        self.nodes = nodes
+        self.matrix = []
+        for node_index in range(len(nodes)):
+            row = []
+            for node_index in range(len(nodes)):
+                row.append(0)
+            self.matrix.append(row)
 
-    s.edges = [Edge(a, 8), Edge(b, 7)]
-    a.edges = [Edge(b, 10)]
-    b.edges = [Edge(c, 5)]
-    d.edges = [Edge(c, 2)]
-    c.edges = [Edge(d, 3)]
+    def find_node(self, node_name):
+        for node in self.nodes:
+            if (node.data == node_name):
+                return node
 
-    return G
+    def _reset_nodes(self):
+        for node in self.nodes:
+            node.status = 0
 
-def create_dag():
-    a = Node("a",[], 0)
-    b = Node("b",[], 0)
-    c = Node("c",[], 0)
-    d = Node("d",[], 0)
-    e = Node("e",[], 0)
-    f = Node("f",[], 0)
+    def _find_node_index(self, node_name):
+        for index in range(len(self.nodes)):
+            if (self.nodes[index].data == node_name):
+                return index
+        print("Node not found for name: %s", node_name)
+        return None
 
-    G = Graph([a,b,c,d,e,f])
+    def put_edge(self, node_name_a, node_name_b, weight):
 
-    a.edges = [Edge(b, 1), Edge(c, 1)]
-    b.edges = [Edge(c, 1), Edge(d, 1), Edge(f, 1)]
-    d.edges = [Edge(e, 1)]
-    e.edges = [Edge(c, 1)]
+        index_a = self._find_node_index(node_name_a)
+        index_b = self._find_node_index(node_name_b)
 
-    return G
+        self.matrix[index_a][index_b] = weight
+    
+    def dfs_path(self, source_name, target_name):
+        source_node = self.find_node(source_name)
+        path = []
+        is_found = self._dfs_path(source_node, target_name, path)
+        self._reset_nodes()
+        return path
+
+    def _dfs_path(self, current_node, target_name, path):
+        is_found = False
+        path.append(current_node.data)
+        if current_node.data == target_name:
+            return True
+        else:
+            current_node.status = 1
+            for node in self.get_neighbours(current_node.data):
+                if node.status != 2:
+                    is_found = self._dfs_path(node, target_name, path)
+                    if is_found:
+                        break
+                    else:
+                        path.pop()
+            current_node.status = 2
+        return is_found
+
+    def get_neighbours(self, name):
+        node_index = self._find_node_index(name)
+        neighbours = []
+        for index in range(len(self.nodes)):
+            if node_index == index:
+                continue
+            if (self.matrix[node_index][index] > 0):
+                neighbours.append(self.nodes[index])
+        return neighbours
+
+# Algorithms
 
 def dfs_path(current_node, goal_node_name):
     path = []
@@ -150,6 +192,62 @@ def test_search(algo, G, starting_node, target_name):
     for node in G.vertices:
         node.status = 0
 
+# Tests
+
+def create_graph():
+    s = Node("s",[], 0)
+    a = Node("a",[], 0)
+    b = Node("b",[], 0)
+    c = Node("c",[], 0)
+    d = Node("d",[], 0)
+
+    G = Graph([a,b,c,d,s])
+
+    s.edges = [Edge(a, 8), Edge(b, 7)]
+    a.edges = [Edge(b, 10)]
+    b.edges = [Edge(c, 5)]
+    d.edges = [Edge(c, 2)]
+    c.edges = [Edge(d, 3)]
+
+    return G
+
+def create_dag():
+    a = Node("a",[], 0)
+    b = Node("b",[], 0)
+    c = Node("c",[], 0)
+    d = Node("d",[], 0)
+    e = Node("e",[], 0)
+    f = Node("f",[], 0)
+
+    G = Graph([a,b,c,d,e,f])
+
+    a.edges = [Edge(b, 1), Edge(c, 1)]
+    b.edges = [Edge(c, 1), Edge(d, 1), Edge(f, 1)]
+    d.edges = [Edge(e, 1)]
+    e.edges = [Edge(c, 1)]
+
+    return G
+
+def create_matrix_graph():
+    a = MatrixNode("a", 0)
+    b = MatrixNode("b", 0)
+    c = MatrixNode("c", 0)
+    d = MatrixNode("d", 0)
+    e = MatrixNode("e", 0)
+    f = MatrixNode("f", 0)
+
+    G = MatrixGraph([a,b,c,d,e,f])
+
+    G.put_edge("a","b",1)
+    G.put_edge("a","c",2)
+    G.put_edge("b","c",3)
+    G.put_edge("b","d",4)
+    G.put_edge("b","f",5)
+    G.put_edge("d","e",6)
+    G.put_edge("e","c",7)
+
+    return G
+
 def test_dfs():
     print("Test DFS")
 
@@ -189,7 +287,24 @@ def test_dft():
     G = create_dag()
     dft(G.vertices[0])
 
+def test_matrix_graph():
+    print("Test MatrixGraph")   
+
+    G = create_matrix_graph()
+    for name in ["a","b","c","d","e","f","g"]:
+        print("Lookup node %s: %s" % (name, G.find_node(name)))
+
+    print("MatrixGraph.bfs")
+    def test(source_name, target_name):
+        print("Path %s -> %s: %s" % (source_name, target_name, G.dfs_path(source_name, target_name)))
+
+    test("a", "c")
+    test("a", "f")
+    test("d", "e")
+    test("b", "c")
+
 test_dfs()
 test_bfs()
 test_all_paths()
 test_dft()
+test_matrix_graph()
