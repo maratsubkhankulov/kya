@@ -1,3 +1,5 @@
+from sets import Set
+
 # Structures
 
 # 0 - unvisited
@@ -91,6 +93,33 @@ class MatrixGraph:
             if (self.matrix[node_index][index] > 0):
                 neighbours.append(self.nodes[index])
         return neighbours
+
+    def has_cycles(self):
+        for node in self.nodes:
+            if self._has_cycles(node):
+                return True
+            for node in self.nodes:
+                node.status = 0 
+        return False
+
+    def _has_cycles(self, start):
+        def has_cycles_dft(current_node, seen):
+            if current_node in seen:
+                print("Cycle at node: %s" % (current_node.data))
+                return True
+            current_node.status = 1
+            seen.add(current_node)
+            for neighbour in self.get_neighbours(current_node.data):
+                if neighbour.status != 2:
+                    if has_cycles_dft(neighbour, seen):
+                        return True
+                    else:
+                        seen.clear()
+            current_node.status = 2
+            return False
+
+        seen = Set()
+        return has_cycles_dft(start, seen)
 
 # Algorithms
 
@@ -248,6 +277,19 @@ def create_matrix_graph():
 
     return G
 
+def create_matrix_graph_with_cycle():
+    a = MatrixNode("a", 0)
+    b = MatrixNode("b", 0)
+    c = MatrixNode("c", 0)
+
+    G = MatrixGraph([a,b,c])
+
+    G.put_edge("a","b",1)
+    G.put_edge("b","c",2)
+    G.put_edge("c","a",3)
+
+    return G
+
 def test_dfs():
     print("Test DFS")
 
@@ -302,6 +344,14 @@ def test_matrix_graph():
     test("a", "f")
     test("d", "e")
     test("b", "c")
+
+    print("MatrixGraph has cycles")
+    G = create_matrix_graph()
+    print("Testing for cycles:")
+    print("Contains cycle: %s" % G.has_cycles())
+    G = create_matrix_graph_with_cycle()
+    print("Testing for cycles:")
+    print("Contains cycle: %s" % G.has_cycles())
 
 test_dfs()
 test_bfs()
