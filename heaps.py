@@ -54,7 +54,10 @@ def build_min_heap(array):
         min_heapify(array, i)
     return array
 
+print("Build max heaps")
 print(build_max_heap([1,2,3,4,5,61,2]))
 print(build_max_heap([3,6,7,4,5]))
+
+print("Build min heaps")
 print(build_min_heap([1,2,3,4,5,61,2]))
 print(build_min_heap([3,6,7,4,5]))
