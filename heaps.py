@@ -24,7 +24,6 @@ def max_heapify(A, i):
 
 def build_max_heap(array):
     half_length = int(math.floor(len(array)/2.0))
-    print half_length
     for i in range(half_length, -1, -1):
         max_heapify(array, i)
     return array
