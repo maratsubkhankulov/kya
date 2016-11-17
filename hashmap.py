@@ -4,6 +4,7 @@ class HashMap:
     store_size = 1000
 
     def __init__(self):
+        self.keys = set()
         self.array = HashMap.store_size*[None]
 
     @staticmethod
@@ -17,13 +18,22 @@ class HashMap:
             return key % HashMap.store_size
 
     def put(self, key, value):
+        self.keys.add(key)
         self.array[HashMap.hash_function(key)] = value
 
+    def remove(self, key):
+        if self.contains_key(key):
+            self.keys.remove(key)
+            self.array[HashMap.hash_function(key)] = None
+
     def contains_key(self, key):
-        return self.get(key) != None
+        return key in self.keys
 
     def get(self, key):
-        return self.array[HashMap.hash_function(key)]
+        if self.contains_key(key):
+            return self.array[HashMap.hash_function(key)]
+        else:
+            return None
 
 def test():
     print "HashMap test"
