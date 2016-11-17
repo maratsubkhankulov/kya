@@ -7,11 +7,14 @@ class HashMap:
         self.array = HashMap.store_size*[None]
 
     @staticmethod
-    def hash_function(string):
-        sum = 0
-        for char in string:
-            sum += ord(char)
-        return (len(string) + sum) % HashMap.store_size
+    def hash_function(key):
+        if type(key) is str:
+            sum = 0
+            for char in key:
+                sum += ord(char)
+            return (len(key) + sum) % HashMap.store_size
+        elif type(key) is int:
+            return key % HashMap.store_size
 
     def put(self, key, value):
         self.array[HashMap.hash_function(key)] = value
@@ -29,6 +32,8 @@ def test():
     my_map.put("a", "apple")
     my_map.put("o", "orange")
     my_map.put("p", "pear")
+    my_map.put(1, "one")
+    my_map.put(21, "twentyone")
 
     print my_map.contains_key("a")
     print my_map.contains_key("o")
@@ -38,6 +43,8 @@ def test():
     print my_map.get("a") == "apple"
     print my_map.get("o") == "orange"
     print my_map.get("p") == "pear"
+    print my_map.get(1) == "one"
+    print my_map.get(21) == "twentyone"
 
 if __name__ == "__main__":
     test()
