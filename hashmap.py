@@ -1,4 +1,4 @@
-# A Hashmap implementation
+# A Hashmap implementation with hash collision resolution
 
 class HashMap:
     n_buckets = 100
