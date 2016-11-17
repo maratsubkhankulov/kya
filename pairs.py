@@ -30,11 +30,13 @@ def find_pairs(array):
             
 
 def test():
-    print find_pairs([1,2,5,-1,-5])
-    print find_pairs([0])
-    print find_pairs([1,-1,1,0])
-    print find_pairs([1,-1,1,0,0])
-    print find_pairs([0,0])
+    print "Testing find_pairs()"
+    print find_pairs([1,2,5,-1,-5]) == [(1, -1), (5, -5)]
+    print find_pairs([]) == []
+    print find_pairs([0]) == []
+    print find_pairs([1,-1,1,0]) == [(1, -1)]
+    print find_pairs([1,-1,1,0,0]) == [(0, 0), (1, -1)]
+    print find_pairs([0,0]) == [(0, 0)]
 
 if __name__ == "__main__":
     test()
