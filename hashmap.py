@@ -1,10 +1,10 @@
 # A Hashmap implementation
 
 class HashMap:
-    n_buckets = 1000
+    n_buckets = 100
 
     def __init__(self):
-        self.buckets = HashMap.n_buckets*[None]
+        self.buckets = HashMap.n_buckets*[[]]
 
     @staticmethod
     def hash_function(key):
@@ -17,23 +17,40 @@ class HashMap:
             return key % HashMap.n_buckets
 
     def put(self, key, value):
-        self.buckets[HashMap.hash_function(key)] = (key,value)
+        bi = self._get_bucket_index(key)
+        if len(self.buckets[bi]) == 0:
+            self.buckets[bi] = [(key,value)]
+        elif len(self.buckets[bi]) > 0:
+            if self.contains_key(key):
+                self.buckets[bi] = [(key,value)]
+            else:
+                self.buckets[bi].append((key,value))
 
     def remove(self, key):
-        self.buckets[HashMap.hash_function(key)] = None
+        bi = self._get_bucket_index(key)
+        if len(self.buckets[bi]) > 0:
+            kv_index = [i for i,kv in enumerate(self.buckets[bi]) if kv[0] == key]
+            self.buckets[bi].pop(kv_index)
+
 
     def contains_key(self, key):
-        return self._get_bucket(key) != None
+        bi = self._get_bucket_index(key)
+        if len(self.buckets[bi]) == 0:
+            return False
+        elif len(self.buckets[bi]) > 0:
+            keys = [kv[0] for kv in self.buckets[bi] if kv[0] == key]
+            return len(keys) > 0
 
     def get(self, key):
-        bucket = self._get_bucket(key)
-        if bucket != None:
-            return bucket[1]
-        else:
+        bi = self._get_bucket_index(key)
+        if len(self.buckets[bi]) == 0:
             return None
+        elif len(self.buckets[bi]) > 0:
+            values = [kv[1] for kv in self.buckets[bi] if kv[0] == key]
+            return values[0]
 
-    def _get_bucket(self, key):
-        return self.buckets[HashMap.hash_function(key)]
+    def _get_bucket_index(self, key):
+        return HashMap.hash_function(key)
 
 def test():
     print "HashMap test"
@@ -46,11 +63,16 @@ def test():
     my_map.put(21, "twentyone")
     my_map.put(1001, "onethousandone")
 
+    print "Test contains_key()"
     print my_map.contains_key("a")
     print my_map.contains_key("o")
     print my_map.contains_key("p")
+    print my_map.contains_key(1)
+    print my_map.contains_key(21)
+    print my_map.contains_key(1001)
     print not my_map.contains_key("x")
 
+    print "Test get()"
     print my_map.get("a") == "apple"
     print my_map.get("o") == "orange"
     print my_map.get("p") == "pear"
