@@ -2,40 +2,41 @@ import fileinput
 from sets import Set
 
 
-IS_WORD = 0
-DICT = 1
-NUM_CHILDREN = 2
-
-class Trie:
+class Contacts:
     def __init__(self):
         self.words = Set()
-        self.root = [False,{},0]
-
-    def add_(self, word):
+    def add(self, word):
         self.words.add(word)
+    def count_ocurrences_(self, prefix):
+        return len([word for word in self.words if word.startswith(prefix)])
+
+class Trie:
+    IS_WORD = 0
+    DICT = 1
+    NUM_CHILDREN = 2
+
+    def __init__(self):
+        self.root = [False,{},0]
 
     def add(self, word):
         node = self.root
         for char in word:
-            node[NUM_CHILDREN] += 1
-            if not char in node[DICT]:
-                node[DICT][char] = [False,{},0]
-            node = node[DICT][char]
-        node[IS_WORD] = True
-        node[NUM_CHILDREN] = 1
-
-    def count_ocurrences_(self, prefix):
-        return len([word for word in self.words if word.startswith(prefix)])
+            node[Trie.NUM_CHILDREN] += 1
+            if not char in node[Trie.DICT]:
+                node[Trie.DICT][char] = [False,{},0]
+            node = node[Trie.DICT][char]
+        node[Trie.IS_WORD] = True
+        node[Trie.NUM_CHILDREN] = 1
 
     def count_ocurrences(self, prefix):
         node = self.root
         # Find prefix node
         for char in prefix:
-            if not char in node[DICT]:
+            if not char in node[Trie.DICT]:
                 return 0
-            node = node[DICT][char]
+            node = node[Trie.DICT][char]
 
-        return node[NUM_CHILDREN]
+        return node[Trie.NUM_CHILDREN]
 
 operation_types = ["add", "find"]
 
