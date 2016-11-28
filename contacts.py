@@ -4,11 +4,12 @@ from sets import Set
 
 IS_WORD = 0
 DICT = 1
+NUM_CHILDREN = 2
 
 class Trie:
     def __init__(self):
         self.words = Set()
-        self.root = [False,{}]
+        self.root = [False,{},0]
 
     def add_(self, word):
         self.words.add(word)
@@ -16,10 +17,12 @@ class Trie:
     def add(self, word):
         node = self.root
         for char in word:
+            node[NUM_CHILDREN] += 1
             if not char in node[DICT]:
-                node[DICT][char] = [False,{}]
+                node[DICT][char] = [False,{},0]
             node = node[DICT][char]
         node[IS_WORD] = True
+        node[NUM_CHILDREN] = 1
 
     def count_ocurrences_(self, prefix):
         return len([word for word in self.words if word.startswith(prefix)])
@@ -32,17 +35,7 @@ class Trie:
                 return 0
             node = node[DICT][char]
 
-        count = 0
-        # Count number of leaves by DFS
-        stack = [node]
-        while len(stack) > 0:
-            node = stack.pop()
-            if node[IS_WORD] == True:
-                count += 1
-            for key in node[DICT]:
-                stack.append(node[DICT][key])
-
-        return count
+        return node[NUM_CHILDREN]
 
 operation_types = ["add", "find"]
 
@@ -71,6 +64,8 @@ def contacts_test():
         line_num += 1
         if op_count == line_num - 1:
             break
+
+    #print trie.root
 
 if __name__ == "__main__":
     contacts_test()
