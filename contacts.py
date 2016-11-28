@@ -1,22 +1,55 @@
 import fileinput
 from sets import Set
 
+
+IS_WORD = 0
+DICT = 1
+
 class Trie:
     def __init__(self):
         self.words = Set()
+        self.root = [False,{}]
 
-    def add(self, word):
+    def add_(self, word):
         self.words.add(word)
 
-    def count_ocurrences(self, prefix):
+    def add(self, word):
+        node = self.root
+        for char in word:
+            if not char in node[DICT]:
+                node[DICT][char] = [False,{}]
+            node = node[DICT][char]
+        node[IS_WORD] = True
+
+    def count_ocurrences_(self, prefix):
         return len([word for word in self.words if word.startswith(prefix)])
+
+    def count_ocurrences(self, prefix):
+        node = self.root
+        # Find prefix node
+        for char in prefix:
+            if not char in node[DICT]:
+                return 0
+            node = node[DICT][char]
+
+        count = 0
+        # Count number of leaves by DFS
+        stack = [node]
+        while len(stack) > 0:
+            node = stack.pop()
+            if node[IS_WORD] == True:
+                count += 1
+            for key in node[DICT]:
+                stack.append(node[DICT][key])
+
+        return count
 
 operation_types = ["add", "find"]
 
-if __name__ == "__main__":
+def contacts_test():
     line_num = 0
     op_count = 0
-    ops = []
+    trie = Trie()
     for line in fileinput.input():
         if line_num == 0:
             try:
@@ -28,15 +61,16 @@ if __name__ == "__main__":
             assert(len(op) == 2)
             assert(op[0] in operation_types)
             op[1] = op[1].strip('\n')
-            ops.append(op)
+
+            # Perform operation
+            if op[0] == "add":
+                trie.add(op[1])
+            elif op[0] == "find":
+                print trie.count_ocurrences(op[1])
+
         line_num += 1
         if op_count == line_num - 1:
             break
 
-    trie = Trie()
-    for op in ops:
-        if op[0] == "add":
-            trie.add(op[1])
-        elif op[0] == "find":
-            print trie.count_ocurrences(op[1])
-    
+if __name__ == "__main__":
+    contacts_test()
